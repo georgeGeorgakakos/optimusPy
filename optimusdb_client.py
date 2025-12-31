@@ -17,6 +17,7 @@ import logging
 import argparse
 import os
 import sys
+import base64
 from typing import Dict, List, Any, Optional
 from pathlib import Path
 import yaml
@@ -361,16 +362,25 @@ class OptimusDBClient:
                 self.logger.error(f"Invalid YAML: {str(e)}")
                 raise
 
-            # Upload file
-            files = {
-                'file': (file_path.name, file_content, 'application/x-yaml')
+            # Base64 encode the file (matching shell script behavior)
+            file_b64 = base64.b64encode(file_content).decode('utf-8')
+
+            # Create JSON payload with base64 file and filename
+            payload = {
+                "file": file_b64,
+                "filename": file_path.name
             }
 
             self.logger.debug(f"Uploading to {self.upload_url}")
+            self.logger.debug(f"Filename: {file_path.name}")
+            self.logger.debug(f"File size: {len(file_content)} bytes")
+            self.logger.debug(f"Base64 size: {len(file_b64)} characters")
 
+            # Send as JSON (not multipart/form-data)
             response = requests.post(
                 self.upload_url,
-                files=files,
+                json=payload,
+                headers={'Content-Type': 'application/json'},
                 timeout=self.timeout
             )
 
@@ -379,10 +389,25 @@ class OptimusDBClient:
 
             response.raise_for_status()
 
-            # Try to parse JSON response
+            # Parse JSON response
             try:
                 result = response.json()
-            except:
+
+                # Extract template_id from various possible locations
+                template_id = (
+                        result.get('data', {}).get('template_id') or
+                        result.get('template_id') or
+                        result.get('data', {}).get('templateId') or
+                        result.get('templateId')
+                )
+
+                if template_id:
+                    self.logger.info(f"Template ID: {template_id}")
+                    result['template_id'] = template_id
+                else:
+                    self.logger.warning("No template_id in response")
+
+            except json.JSONDecodeError:
                 result = {"status": "success", "message": response.text}
 
             self.logger.info(f"TOSCA file uploaded successfully: {file_path.name}")
@@ -557,7 +582,7 @@ Examples:
     parser.add_argument('--url', default='http://193.225.250.240',
                         help='OptimusDB base URL (default: http://193.225.250.240)')
     parser.add_argument('--context', default='swarmkb',
-                        help='API context (default: optimusdb)')
+                        help='API context (default: swarmkb)')
     parser.add_argument('--log-level', default='INFO',
                         choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'],
                         help='Logging level')
