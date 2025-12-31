@@ -92,7 +92,7 @@ from optimusdb_client import OptimusDBClient
 
 # Initialize client
 client = OptimusDBClient(
-    base_url="http://localhost:18001",
+    base_url="http://193.225.250.240",
     context="optimusdb",
     log_level="INFO"
 )
@@ -113,7 +113,7 @@ result = client.get(criteria=[{"_id": {"$regex": "^tosca_"}}])
 ### General Options
 
 ```bash
---url URL              OptimusDB base URL (default: http://localhost:18001)
+--url URL              OptimusDB base URL (default: http://193.225.250.240)
 --context CONTEXT      API context (default: optimusdb)
 --log-level LEVEL      Logging level: DEBUG, INFO, WARNING, ERROR
 ```
@@ -262,8 +262,8 @@ python optimusdb_client.py health
 from optimusdb_client import OptimusDBClient
 
 client = OptimusDBClient(
-    base_url="http://localhost:18001",  # OptimusDB server URL
-    context="optimusdb",                # API context path
+    base_url="http://193.225.250.240",  # OptimusDB server URL
+    context="swarmkb",                # API context path
     timeout=30,                         # Request timeout in seconds
     log_level="INFO"                    # DEBUG, INFO, WARNING, ERROR
 )
@@ -555,7 +555,7 @@ Error: Connection refused
 
 **Solution:** Verify OptimusDB is running and URL is correct:
 ```bash
-python optimusdb_client.py health --url http://localhost:18001
+python optimusdb_client.py health --url http://193.225.250.240
 ```
 
 ### Invalid JSON
@@ -566,7 +566,7 @@ Error: Failed to parse response JSON
 
 **Solution:** Check server logs and verify endpoint exists:
 ```bash
-curl http://localhost:18001/optimusdb/agent/status
+curl http://193.225.250.240/swarmkb/agent/status
 ```
 
 ### Timeout
@@ -598,8 +598,8 @@ python optimusdb_client.py get --dstype dsswres
 Create a `.env` file:
 
 ```bash
-OPTIMUSDB_URL=http://localhost:18001
-OPTIMUSDB_CONTEXT=optimusdb
+OPTIMUSDB_URL=http://193.225.250.240
+OPTIMUSDB_CONTEXT=swarmkb
 OPTIMUSDB_TIMEOUT=30
 OPTIMUSDB_LOG_LEVEL=INFO
 ```
@@ -611,8 +611,8 @@ import os
 from optimusdb_client import OptimusDBClient
 
 client = OptimusDBClient(
-    base_url=os.getenv('OPTIMUSDB_URL', 'http://localhost:18001'),
-    context=os.getenv('OPTIMUSDB_CONTEXT', 'optimusdb'),
+    base_url=os.getenv('OPTIMUSDB_URL', 'http://193.225.250.240'),
+    context=os.getenv('OPTIMUSDB_CONTEXT', 'swarmkb'),
     timeout=int(os.getenv('OPTIMUSDB_TIMEOUT', '30')),
     log_level=os.getenv('OPTIMUSDB_LOG_LEVEL', 'INFO')
 )

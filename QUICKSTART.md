@@ -141,10 +141,8 @@ print(f"Found {len(result['data'])} TOSCA templates")
 
 ```bash
 # Check server URL
-python optimusdb_client.py health --url http://localhost:8080
+python optimusdb_client.py health
 
-# Try different port
-python optimusdb_client.py health --url http://localhost:8081
 ```
 
 ### Enable Debug Logging
