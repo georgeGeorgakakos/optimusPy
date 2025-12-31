@@ -329,18 +329,24 @@ class OptimusDBClient:
     # TOSCA OPERATIONS
     # ============================================================================
 
-    def upload_tosca(self, file_path: str) -> Dict[str, Any]:
+    def upload_tosca(self, file_path: str, store_full_structure: bool = True) -> Dict[str, Any]:
         """
         Upload a TOSCA YAML file to OptimusDB.
 
         Args:
             file_path: Path to TOSCA YAML file
+            store_full_structure: If True, creates queryable structured documents.
+                                 If False, stores as binary blob (legacy mode).
 
         Returns:
             Response with upload result
 
         Example:
-            client.upload_tosca("webapp_adt.yaml")
+            # Upload with full structure (queryable)
+            client.upload_tosca("webapp_adt.yaml", store_full_structure=True)
+
+            # Upload as blob (legacy mode)
+            client.upload_tosca("webapp_adt.yaml", store_full_structure=False)
         """
         file_path = Path(file_path)
 
@@ -348,6 +354,7 @@ class OptimusDBClient:
             raise FileNotFoundError(f"File not found: {file_path}")
 
         self.logger.info(f"Uploading TOSCA file: {file_path}")
+        self.logger.info(f"Full structure mode: {store_full_structure}")
 
         try:
             # Read file
@@ -368,13 +375,15 @@ class OptimusDBClient:
             # Create JSON payload with base64 file and filename
             payload = {
                 "file": file_b64,
-                "filename": file_path.name
+                "filename": file_path.name,
+                "store_full_structure": store_full_structure
             }
 
             self.logger.debug(f"Uploading to {self.upload_url}")
             self.logger.debug(f"Filename: {file_path.name}")
             self.logger.debug(f"File size: {len(file_content)} bytes")
             self.logger.debug(f"Base64 size: {len(file_b64)} characters")
+            self.logger.debug(f"Store full structure: {store_full_structure}")
 
             # Send as JSON (not multipart/form-data)
             response = requests.post(
@@ -406,6 +415,14 @@ class OptimusDBClient:
                     result['template_id'] = template_id
                 else:
                     self.logger.warning("No template_id in response")
+
+                # Log storage information
+                storage_info = result.get('data', {})
+                if storage_info.get('queryable') is False:
+                    self.logger.warning("⚠️  File uploaded in LEGACY MODE (not queryable)")
+                    self.logger.warning("⚠️  Use store_full_structure=True for queryable documents")
+                elif storage_info.get('queryable') is True:
+                    self.logger.info("✓ File uploaded with full structure (queryable)")
 
             except json.JSONDecodeError:
                 result = {"status": "success", "message": response.text}
@@ -630,6 +647,10 @@ Examples:
     # UPLOAD command
     upload_parser = subparsers.add_parser('upload', help='Upload TOSCA file')
     upload_parser.add_argument('file', help='Path to TOSCA YAML file')
+    upload_parser.add_argument('--store-full-structure', action='store_true', default=True,
+                               help='Store as queryable structured documents (default: True)')
+    upload_parser.add_argument('--legacy-mode', action='store_true',
+                               help='Store as binary blob (legacy mode, not queryable)')
 
     # STATUS command
     subparsers.add_parser('status', help='Get agent status')
@@ -695,7 +716,10 @@ Examples:
             client.print_result(result, "DELETE ALL Result")
 
         elif args.command == 'upload':
-            result = client.upload_tosca(args.file)
+            # Determine storage mode
+            store_full_structure = not args.legacy_mode if hasattr(args, 'legacy_mode') else True
+
+            result = client.upload_tosca(args.file, store_full_structure=store_full_structure)
             client.print_result(result, "UPLOAD Result")
 
         elif args.command == 'status':
