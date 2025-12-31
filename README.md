@@ -1,8 +1,8 @@
 
 # 
-# OptimusDB (optimusPy) Python Client
+# OptimusDB (optimusPy) python Client
 #
-A comprehensive Python client for interacting with OptimusDB distributed data catalog system.
+A comprehensive python3 client for interacting with OptimusDB distributed data catalog system.
 
 ## Features
 
@@ -12,13 +12,13 @@ A comprehensive Python client for interacting with OptimusDB distributed data ca
 ✅ **Batch Operations** - Bulk upload, export, import, cleanup  
 ✅ **Logging & Debug** - Comprehensive logging with adjustable levels  
 ✅ **CLI Interface** - Easy command-line usage  
-✅ **Python API** - Use as a library in your code
+✅ **python3 API** - Use as a library in your code
 
 ## Installation
 
 ### Prerequisites
 
-- Python 3.8 or higher
+- python 3.8 or higher
 - Access to OptimusDB server
 
 ### Setup
@@ -56,7 +56,7 @@ chmod +x batch_operations.py
 4. **Verify installation**
 
 ```bash
-python optimusdb_client.py health
+python3 optimusdb_client.py health
 ```
 
 Expected output:
@@ -70,24 +70,24 @@ Expected output:
 
 ```bash
 # Get all documents
-python optimusdb_client.py get
+python3 optimusdb_client.py get
 
 # Get documents with criteria
-python optimusdb_client.py get --criteria '_id:tosca_.*:regex'
+python3 optimusdb_client.py get --criteria '_id:tosca_.*:regex'
 
 # Upload TOSCA file
-python optimusdb_client.py upload webapp_adt.yaml
+python3 optimusdb_client.py upload webapp_adt.yaml
 
 # Delete documents
-python optimusdb_client.py delete --criteria 'type:test'
+python3 optimusdb_client.py delete --criteria 'type:test'
 
 # Check server health
-python optimusdb_client.py health
+python3 optimusdb_client.py health
 ```
 
-### Python API Usage
+### python3 API Usage
 
-```python
+```python3
 from optimusdb_client import OptimusDBClient
 
 # Initialize client
@@ -124,25 +124,25 @@ result = client.get(criteria=[{"_id": {"$regex": "^tosca_"}}])
 
 ```bash
 # Get all documents
-python optimusdb_client.py get
+python3 optimusdb_client.py get
 
 # Get from specific datastore
-python optimusdb_client.py get --dstype kbmetadata
+python3 optimusdb_client.py get --dstype kbmetadata
 
 # Get with simple criteria
-python optimusdb_client.py get --criteria 'type:renewable_energy'
+python3 optimusdb_client.py get --criteria 'type:renewable_energy'
 
 # Get with regex pattern
-python optimusdb_client.py get --criteria '_id:tosca_.*:regex'
+python3 optimusdb_client.py get --criteria '_id:tosca_.*:regex'
 
 # Get with numeric filter
-python optimusdb_client.py get --criteria 'capacity:100:gt'
+python3 optimusdb_client.py get --criteria 'capacity:100:gt'
 
 # Multiple criteria
-python optimusdb_client.py get --criteria 'type:renewable_energy' 'capacity:100:gt'
+python3 optimusdb_client.py get --criteria 'type:renewable_energy' 'capacity:100:gt'
 
 # Get nested field
-python optimusdb_client.py get --criteria 'metadata.status:active'
+python3 optimusdb_client.py get --criteria 'metadata.status:active'
 ```
 
 **Criteria Format:**
@@ -162,10 +162,10 @@ python optimusdb_client.py get --criteria 'metadata.status:active'
 
 ```bash
 # Create from JSON string
-python optimusdb_client.py create --json '[{"name": "Solar Panel", "capacity": 100}]'
+python3 optimusdb_client.py create --json '[{"name": "Solar Panel", "capacity": 100}]'
 
 # Create from file
-python optimusdb_client.py create --json documents.json
+python3 optimusdb_client.py create --json documents.json
 ```
 
 **Example documents.json:**
@@ -190,12 +190,12 @@ python optimusdb_client.py create --json documents.json
 
 ```bash
 # Update by criteria
-python optimusdb_client.py update \
+python3 optimusdb_client.py update \
   --criteria '_id:12345' \
   --data '{"status": "active", "updated_at": "2025-12-31"}'
 
 # Update from file
-python optimusdb_client.py update \
+python3 optimusdb_client.py update \
   --criteria 'type:test' \
   --data update_data.json
 ```
@@ -204,61 +204,61 @@ python optimusdb_client.py update \
 
 ```bash
 # Delete by ID
-python optimusdb_client.py delete --criteria '_id:12345'
+python3 optimusdb_client.py delete --criteria '_id:12345'
 
 # Delete by type
-python optimusdb_client.py delete --criteria 'type:test'
+python3 optimusdb_client.py delete --criteria 'type:test'
 
 # Delete with regex
-python optimusdb_client.py delete --criteria '_id:temp_.*:regex'
+python3 optimusdb_client.py delete --criteria '_id:temp_.*:regex'
 
 # Delete all matching pattern
-python optimusdb_client.py delete --criteria 'status:inactive'
+python3 optimusdb_client.py delete --criteria 'status:inactive'
 ```
 
 #### 5. DELETE-ALL - Clear Datastore (⚠️ DANGEROUS)
 
 ```bash
 # Delete ALL documents (with confirmation)
-python optimusdb_client.py delete-all
+python3 optimusdb_client.py delete-all
 
 # Delete without confirmation (USE WITH CAUTION!)
-python optimusdb_client.py delete-all --confirm
+python3 optimusdb_client.py delete-all --confirm
 ```
 
 #### 6. UPLOAD - Upload TOSCA Files
 
 ```bash
 # Upload single file
-python optimusdb_client.py upload webapp_adt.yaml
+python3 optimusdb_client.py upload webapp_adt.yaml
 
 # Upload with different server
-python optimusdb_client.py upload webapp_adt.yaml --url http://192.168.1.100
+python3 optimusdb_client.py upload webapp_adt.yaml --url http://192.168.1.100
 ```
 
 #### 7. STATUS - Get Agent Status
 
 ```bash
-python optimusdb_client.py status
+python3 optimusdb_client.py status
 ```
 
 #### 8. PEERS - Get Peer List
 
 ```bash
-python optimusdb_client.py peers
+python3 optimusdb_client.py peers
 ```
 
 #### 9. HEALTH - Health Check
 
 ```bash
-python optimusdb_client.py health
+python3 optimusdb_client.py health
 ```
 
-## Python API Reference
+## python3 API Reference
 
 ### Initialize Client
 
-```python
+```python3
 from optimusdb_client import OptimusDBClient
 
 client = OptimusDBClient(
@@ -273,7 +273,7 @@ client = OptimusDBClient(
 
 #### Get Documents
 
-```python
+```python3
 # Get all documents
 result = client.get()
 
@@ -311,7 +311,7 @@ result = client.get(criteria=[{
 
 #### Create Documents
 
-```python
+```python3
 # Create single document
 client.create(documents=[{
     "name": "Solar Panel A",
@@ -329,7 +329,7 @@ client.create(documents=[
 
 #### Update Documents
 
-```python
+```python3
 # Update by criteria
 client.update(
     criteria=[{"_id": "12345"}],
@@ -349,7 +349,7 @@ client.update(
 
 #### Delete Documents
 
-```python
+```python3
 # Delete by ID
 client.delete(criteria=[{"_id": "12345"}])
 
@@ -365,7 +365,7 @@ client.delete_all()  # ⚠️ Deletes everything!
 
 ### TOSCA Operations
 
-```python
+```python3
 # Upload TOSCA file
 result = client.upload_tosca("webapp_adt.yaml")
 client.print_result(result)
@@ -373,7 +373,7 @@ client.print_result(result)
 
 ### Advanced Queries
 
-```python
+```python3
 # Query with strategy options
 result = client.query(
     criteria=[{"type": "renewable_energy"}],
@@ -396,7 +396,7 @@ result = client.query(
 
 ### Utility Operations
 
-```python
+```python3
 # Health check
 is_healthy = client.health_check()
 
@@ -409,7 +409,7 @@ peers = client.get_peers()
 
 ### Pretty Printing
 
-```python
+```python3
 # Print result with formatting
 result = client.get()
 client.print_result(result, "My Query Results")
@@ -427,44 +427,44 @@ Use the `batch_operations.py` script for bulk tasks.
 
 ```bash
 # Upload all YAML files from a directory
-python batch_operations.py bulk-upload /path/to/tosca/files/
+python3 batch_operations.py bulk-upload /path/to/tosca/files/
 ```
 
 ### Export to JSON
 
 ```bash
 # Export all documents
-python batch_operations.py export backup.json
+python3 batch_operations.py export backup.json
 
 # Export from specific datastore
-python batch_operations.py export backup.json --dstype kbmetadata
+python3 batch_operations.py export backup.json --dstype kbmetadata
 ```
 
 ### Import from JSON
 
 ```bash
 # Import documents
-python batch_operations.py import backup.json
+python3 batch_operations.py import backup.json
 
 # Import to specific datastore
-python batch_operations.py import backup.json --dstype kbmetadata
+python3 batch_operations.py import backup.json --dstype kbmetadata
 ```
 
 ### Cleanup by Pattern
 
 ```bash
 # Delete documents matching pattern (interactive)
-python batch_operations.py cleanup '^temp_'
+python3 batch_operations.py cleanup '^temp_'
 
 # Cleanup test documents
-python batch_operations.py cleanup '^test_'
+python3 batch_operations.py cleanup '^test_'
 ```
 
 ## Complete Examples
 
 ### Example 1: Complete Workflow
 
-```python
+```python3
 from optimusdb_client import OptimusDBClient
 
 # Initialize
@@ -508,7 +508,7 @@ print(f"Total documents: {len(final['data'])}")
 
 ### Example 2: Data Migration
 
-```python
+```python3
 # Export from one server
 client_old = OptimusDBClient(base_url="http://old-server:18001")
 result = client_old.get()
@@ -523,7 +523,7 @@ print(f"Migrated {len(documents)} documents")
 
 ### Example 3: Monitoring & Cleanup
 
-```python
+```python3
 import time
 
 client = OptimusDBClient()
@@ -555,7 +555,7 @@ Error: Connection refused
 
 **Solution:** Verify OptimusDB is running and URL is correct:
 ```bash
-python optimusdb_client.py health --url http://193.225.250.240
+python3 optimusdb_client.py health --url http://193.225.250.240
 ```
 
 ### Invalid JSON
@@ -576,7 +576,7 @@ Error: Request timeout after 30 seconds
 ```
 
 **Solution:** Increase timeout or check server performance:
-```python
+```python3
 client = OptimusDBClient(timeout=60)
 ```
 
@@ -588,7 +588,7 @@ Retrieved 0 document(s)
 
 **Solution:** Verify datastore name:
 ```bash
-python optimusdb_client.py get --dstype dsswres
+python3 optimusdb_client.py get --dstype dsswres
 ```
 
 ## Advanced Configuration
@@ -606,7 +606,7 @@ OPTIMUSDB_LOG_LEVEL=INFO
 
 ### Custom Configuration
 
-```python
+```python3
 import os
 from optimusdb_client import OptimusDBClient
 
@@ -623,7 +623,7 @@ client = OptimusDBClient(
 Run the example script to test all functionality:
 
 ```bash
-python example_usage.py
+python3 example_usage.py
 ```
 
 This will:
