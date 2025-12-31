@@ -28,8 +28,8 @@ class OptimusDBClient:
     """Main client class for OptimusDB operations."""
 
     def __init__(self,
-                 base_url: str = "http://localhost:8080",
-                 context: str = "optimusdb",
+                 base_url: str = "http://193.225.250.240",
+                 context: str = "swarmkb",
                  timeout: int = 30,
                  log_level: str = "INFO"):
         """
@@ -554,9 +554,9 @@ Examples:
         """
     )
 
-    parser.add_argument('--url', default='http://localhost:8080',
-                        help='OptimusDB base URL (default: http://localhost:8080)')
-    parser.add_argument('--context', default='optimusdb',
+    parser.add_argument('--url', default='http://193.225.250.240',
+                        help='OptimusDB base URL (default: http://193.225.250.240)')
+    parser.add_argument('--context', default='swarmkb',
                         help='API context (default: optimusdb)')
     parser.add_argument('--log-level', default='INFO',
                         choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'],

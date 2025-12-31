@@ -9,8 +9,8 @@ import json
 
 # Initialize client
 client = OptimusDBClient(
-    base_url="http://localhost:8080",
-    context="optimusdb",
+    base_url="http://193.225.250.240",
+    context="swarmkb",
     log_level="INFO"
 )
 

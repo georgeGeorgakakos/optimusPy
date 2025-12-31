@@ -131,9 +131,9 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(description='OptimusDB Batch Operations')
-    parser.add_argument('--url', default='http://localhost:8080',
+    parser.add_argument('--url', default='http://193.225.250.240',
                         help='OptimusDB base URL')
-    parser.add_argument('--context', default='optimusdb',
+    parser.add_argument('--context', default='swarmkb',
                         help='API context')
 
     subparsers = parser.add_subparsers(dest='operation', help='Operation to perform')
