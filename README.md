@@ -92,7 +92,7 @@ from optimusdb_client import OptimusDBClient
 
 # Initialize client
 client = OptimusDBClient(
-    base_url="http://localhost:8080",
+    base_url="http://localhost:18001",
     context="optimusdb",
     log_level="INFO"
 )
@@ -113,7 +113,7 @@ result = client.get(criteria=[{"_id": {"$regex": "^tosca_"}}])
 ### General Options
 
 ```bash
---url URL              OptimusDB base URL (default: http://localhost:8080)
+--url URL              OptimusDB base URL (default: http://localhost:18001)
 --context CONTEXT      API context (default: optimusdb)
 --log-level LEVEL      Logging level: DEBUG, INFO, WARNING, ERROR
 ```
@@ -233,7 +233,7 @@ python optimusdb_client.py delete-all --confirm
 python optimusdb_client.py upload webapp_adt.yaml
 
 # Upload with different server
-python optimusdb_client.py upload webapp_adt.yaml --url http://192.168.1.100:8080
+python optimusdb_client.py upload webapp_adt.yaml --url http://192.168.1.100
 ```
 
 #### 7. STATUS - Get Agent Status
@@ -262,7 +262,7 @@ python optimusdb_client.py health
 from optimusdb_client import OptimusDBClient
 
 client = OptimusDBClient(
-    base_url="http://localhost:8080",  # OptimusDB server URL
+    base_url="http://localhost:18001",  # OptimusDB server URL
     context="optimusdb",                # API context path
     timeout=30,                         # Request timeout in seconds
     log_level="INFO"                    # DEBUG, INFO, WARNING, ERROR
@@ -510,12 +510,12 @@ print(f"Total documents: {len(final['data'])}")
 
 ```python
 # Export from one server
-client_old = OptimusDBClient(base_url="http://old-server:8080")
+client_old = OptimusDBClient(base_url="http://old-server:18001")
 result = client_old.get()
 documents = result['data']
 
 # Import to new server
-client_new = OptimusDBClient(base_url="http://new-server:8080")
+client_new = OptimusDBClient(base_url="http://new-server:18001")
 client_new.create(documents)
 
 print(f"Migrated {len(documents)} documents")
@@ -555,7 +555,7 @@ Error: Connection refused
 
 **Solution:** Verify OptimusDB is running and URL is correct:
 ```bash
-python optimusdb_client.py health --url http://localhost:8080
+python optimusdb_client.py health --url http://localhost:18001
 ```
 
 ### Invalid JSON
@@ -566,7 +566,7 @@ Error: Failed to parse response JSON
 
 **Solution:** Check server logs and verify endpoint exists:
 ```bash
-curl http://localhost:8080/optimusdb/agent/status
+curl http://localhost:18001/optimusdb/agent/status
 ```
 
 ### Timeout
@@ -598,7 +598,7 @@ python optimusdb_client.py get --dstype dsswres
 Create a `.env` file:
 
 ```bash
-OPTIMUSDB_URL=http://localhost:8080
+OPTIMUSDB_URL=http://localhost:18001
 OPTIMUSDB_CONTEXT=optimusdb
 OPTIMUSDB_TIMEOUT=30
 OPTIMUSDB_LOG_LEVEL=INFO
@@ -611,7 +611,7 @@ import os
 from optimusdb_client import OptimusDBClient
 
 client = OptimusDBClient(
-    base_url=os.getenv('OPTIMUSDB_URL', 'http://localhost:8080'),
+    base_url=os.getenv('OPTIMUSDB_URL', 'http://localhost:18001'),
     context=os.getenv('OPTIMUSDB_CONTEXT', 'optimusdb'),
     timeout=int(os.getenv('OPTIMUSDB_TIMEOUT', '30')),
     log_level=os.getenv('OPTIMUSDB_LOG_LEVEL', 'INFO')
