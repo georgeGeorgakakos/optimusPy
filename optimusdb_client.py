@@ -779,6 +779,8 @@ def parse_criteria(criteria_list: List[str]) -> List[Dict[str, Any]]:
     return [criteria] if criteria else []
 
 
+
+
 def parse_json_arg(json_arg: str) -> Any:
     """Parse JSON argument (either JSON string or file path)."""
     # Check if it's a file

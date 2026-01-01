@@ -171,6 +171,7 @@ def main():
         print("Server is not reachable. Exiting.")
         sys.exit(1)
 
+
     # Execute operation
     if args.operation == 'bulk-upload':
         bulk_upload_tosca(args.directory, client)
