@@ -1,0 +1,22 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: RabbitMQ message broker
+
+topology_template:
+  node_templates:
+    rabbitmq:
+      type: tosca.nodes.MessageQueue.RabbitMQ
+      properties:
+        version: "3.12"
+        cluster_mode: true
+        num_nodes: 3
+        ha_policy: all
+      requirements:
+        - host: mq_host
+    
+    mq_host:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties:
+            num_cpus: 4
+            mem_size: 8 GB

@@ -1,0 +1,22 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: Neo4j graph database
+
+topology_template:
+  node_templates:
+    neo4j:
+      type: tosca.nodes.Database.Graph
+      properties:
+        version: "5.14"
+        edition: enterprise
+        causal_clustering: true
+        cluster_size: 3
+      requirements:
+        - host: graph_host
+    
+    graph_host:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties:
+            num_cpus: 8
+            mem_size: 32 GB

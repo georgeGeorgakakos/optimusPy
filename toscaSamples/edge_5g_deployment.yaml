@@ -1,0 +1,23 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: 5G edge computing deployment
+
+topology_template:
+  node_templates:
+    mec_application:
+      type: tosca.nodes.EdgeComputing.MECApp
+      properties:
+        app_name: ar-streaming
+        latency_requirement: 10ms
+      requirements:
+        - host: mec_host
+    
+    mec_host:
+      type: tosca.nodes.EdgeComputing.MECHost
+      properties:
+        location: base-station-001
+        bandwidth: 10Gbps
+      capabilities:
+        host:
+          properties:
+            num_cpus: 16
+            mem_size: 64 GB

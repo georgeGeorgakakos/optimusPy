@@ -1,0 +1,40 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: Jenkins CI/CD pipeline
+
+topology_template:
+  node_templates:
+    jenkins_master:
+      type: tosca.nodes.CICD.Jenkins
+      properties:
+        version: "2.426"
+        num_executors: 4
+        plugins:
+          - git
+          - docker
+          - kubernetes
+      requirements:
+        - host: cicd_host
+    
+    jenkins_agent:
+      type: tosca.nodes.CICD.JenkinsAgent
+      properties:
+        num_agents: 3
+      requirements:
+        - connects_to: jenkins_master
+        - host: agent_host
+    
+    cicd_host:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties:
+            num_cpus: 4
+            mem_size: 16 GB
+    
+    agent_host:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties:
+            num_cpus: 8
+            mem_size: 16 GB

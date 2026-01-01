@@ -1,0 +1,55 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: Order microservice with Redis cache
+
+topology_template:
+  node_templates:
+    order_service:
+      type: tosca.nodes.Microservice
+      properties:
+        service_name: order-api
+        language: go
+        version: "1.21"
+      requirements:
+        - host: service_host
+        - cache: redis_cache
+        - database: order_db
+    
+    redis_cache:
+      type: tosca.nodes.Database.Redis
+      properties:
+        version: "7.2"
+        max_memory: 2GB
+      requirements:
+        - host: cache_host
+    
+    order_db:
+      type: tosca.nodes.Database.PostgreSQL
+      properties:
+        version: "16.0"
+        db_name: orders
+      requirements:
+        - host: db_host
+    
+    service_host:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties:
+            num_cpus: 2
+            mem_size: 4 GB
+    
+    cache_host:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties:
+            num_cpus: 1
+            mem_size: 2 GB
+    
+    db_host:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties:
+            num_cpus: 4
+            mem_size: 8 GB

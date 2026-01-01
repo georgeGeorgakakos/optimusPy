@@ -1,0 +1,38 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: Real-time analytics microservice
+
+topology_template:
+  node_templates:
+    analytics_service:
+      type: tosca.nodes.Microservice
+      properties:
+        service_name: analytics-engine
+        language: scala
+        framework: akka
+      requirements:
+        - host: service_host
+        - datastore: elasticsearch
+    
+    elasticsearch:
+      type: tosca.nodes.Database.Elasticsearch
+      properties:
+        version: "8.11"
+        cluster_name: analytics-cluster
+      requirements:
+        - host: es_host
+    
+    service_host:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties:
+            num_cpus: 4
+            mem_size: 8 GB
+    
+    es_host:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties:
+            num_cpus: 4
+            mem_size: 16 GB

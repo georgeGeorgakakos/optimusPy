@@ -1,0 +1,22 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: Edge CDN cache deployment
+
+topology_template:
+  node_templates:
+    cdn_cache:
+      type: tosca.nodes.EdgeComputing.CDNCache
+      properties:
+        cache_size: 1TB
+        ttl_default: 3600
+        purge_policy: lru
+      requirements:
+        - host: edge_node
+    
+    edge_node:
+      type: tosca.nodes.Compute.EdgeDevice
+      capabilities:
+        host:
+          properties:
+            num_cpus: 8
+            mem_size: 32 GB
+            storage: 2TB

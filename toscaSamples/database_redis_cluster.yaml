@@ -1,0 +1,23 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: Redis cluster for caching
+
+topology_template:
+  node_templates:
+    redis_cluster:
+      type: tosca.nodes.Database.Redis
+      properties:
+        version: "7.2"
+        cluster_mode: true
+        replicas: 2
+        max_memory: 16GB
+        eviction_policy: allkeys-lru
+      requirements:
+        - host: cache_host
+    
+    cache_host:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties:
+            num_cpus: 4
+            mem_size: 32 GB

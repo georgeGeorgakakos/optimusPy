@@ -1,0 +1,35 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: Web Application Firewall deployment
+
+topology_template:
+  node_templates:
+    waf:
+      type: tosca.nodes.Security.WAF
+      properties:
+        waf_type: modsecurity
+        rule_set: owasp-crs
+        blocking_mode: true
+      requirements:
+        - protects: web_application
+        - host: security_host
+    
+    web_application:
+      type: tosca.nodes.WebApplication
+      requirements:
+        - host: app_server
+    
+    security_host:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties:
+            num_cpus: 4
+            mem_size: 8 GB
+    
+    app_server:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties:
+            num_cpus: 2
+            mem_size: 4 GB

@@ -1,0 +1,45 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: ELK stack for log aggregation
+
+topology_template:
+  node_templates:
+    elasticsearch:
+      type: tosca.nodes.Monitoring.Elasticsearch
+      properties:
+        version: "8.11"
+        cluster_size: 3
+      requirements:
+        - host: es_host
+    
+    logstash:
+      type: tosca.nodes.Monitoring.Logstash
+      properties:
+        version: "8.11"
+        pipeline_workers: 4
+      requirements:
+        - output: elasticsearch
+        - host: log_host
+    
+    kibana:
+      type: tosca.nodes.Monitoring.Kibana
+      properties:
+        version: "8.11"
+      requirements:
+        - datasource: elasticsearch
+        - host: log_host
+    
+    es_host:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties:
+            num_cpus: 8
+            mem_size: 32 GB
+    
+    log_host:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties:
+            num_cpus: 4
+            mem_size: 16 GB

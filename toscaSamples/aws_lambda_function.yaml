@@ -1,0 +1,15 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: AWS Lambda serverless function
+
+topology_template:
+  node_templates:
+    data_processor:
+      type: tosca.nodes.Function.AWS.Lambda
+      properties:
+        function_name: data-processor
+        runtime: python3.11
+        handler: lambda_function.lambda_handler
+        memory_size: 512
+        timeout: 60
+        environment_variables:
+          LOG_LEVEL: INFO

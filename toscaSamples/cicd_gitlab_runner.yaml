@@ -1,0 +1,21 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: GitLab CI/CD runner
+
+topology_template:
+  node_templates:
+    gitlab_runner:
+      type: tosca.nodes.CICD.GitLabRunner
+      properties:
+        version: "16.6"
+        executor: docker
+        concurrent_jobs: 10
+      requirements:
+        - host: runner_host
+    
+    runner_host:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties:
+            num_cpus: 8
+            mem_size: 32 GB

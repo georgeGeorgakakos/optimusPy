@@ -1,0 +1,41 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: React SPA with backend API
+
+topology_template:
+  node_templates:
+    react_frontend:
+      type: tosca.nodes.WebApplication.React
+      properties:
+        app_name: react-spa
+        build_tool: vite
+      requirements:
+        - host: nginx_server
+    
+    api_backend:
+      type: tosca.nodes.WebApplication.FastAPI
+      properties:
+        python_version: "3.11"
+        port: 8000
+      requirements:
+        - host: api_host
+    
+    nginx_server:
+      type: tosca.nodes.WebServer.Nginx
+      requirements:
+        - host: web_host
+    
+    web_host:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties:
+            num_cpus: 2
+            mem_size: 2 GB
+    
+    api_host:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties:
+            num_cpus: 2
+            mem_size: 4 GB

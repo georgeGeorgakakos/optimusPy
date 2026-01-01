@@ -1,0 +1,30 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: Edge video analytics system
+
+topology_template:
+  node_templates:
+    video_camera:
+      type: tosca.nodes.IoT.Camera
+      properties:
+        resolution: 1080p
+        fps: 30
+        stream_protocol: rtsp
+      requirements:
+        - connects_to: edge_analytics
+    
+    edge_analytics:
+      type: tosca.nodes.EdgeComputing.Analytics
+      properties:
+        model_name: yolov8
+        inference_engine: tensorrt
+      requirements:
+        - host: edge_server
+    
+    edge_server:
+      type: tosca.nodes.Compute.EdgeDevice
+      capabilities:
+        host:
+          properties:
+            num_cpus: 8
+            mem_size: 16 GB
+            gpu: nvidia-jetson-orin

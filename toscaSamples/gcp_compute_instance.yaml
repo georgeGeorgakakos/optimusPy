@@ -1,0 +1,19 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: GCP Compute Engine instance
+
+topology_template:
+  node_templates:
+    web_instance:
+      type: tosca.nodes.Compute.GCP.ComputeEngine
+      properties:
+        machine_type: n2-standard-2
+        zone: us-central1-a
+        boot_disk_image: ubuntu-2204-lts
+        boot_disk_size: 50
+        network_tags:
+          - web-server
+      capabilities:
+        host:
+          properties:
+            num_cpus: 2
+            mem_size: 8 GB

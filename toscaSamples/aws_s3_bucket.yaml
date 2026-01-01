@@ -1,0 +1,14 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: AWS S3 bucket with versioning
+
+topology_template:
+  node_templates:
+    data_bucket:
+      type: tosca.nodes.Storage.AWS.S3
+      properties:
+        bucket_name: my-data-bucket
+        versioning_enabled: true
+        encryption: AES256
+        lifecycle_rules:
+          - transition_days: 30
+            storage_class: STANDARD_IA

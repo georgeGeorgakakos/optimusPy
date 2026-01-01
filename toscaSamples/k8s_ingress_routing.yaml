@@ -1,0 +1,27 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: Kubernetes Ingress configuration
+
+topology_template:
+  node_templates:
+    webapp_ingress:
+      type: tosca.nodes.Kubernetes.Ingress
+      properties:
+        name: webapp-ingress
+        ingress_class: nginx
+        rules:
+          - host: app.example.com
+            paths:
+              - path: /
+                service: webapp-service
+                port: 80
+        tls:
+          - hosts:
+              - app.example.com
+            secret_name: tls-cert
+      requirements:
+        - host: k8s_cluster
+    
+    k8s_cluster:
+      type: tosca.nodes.Kubernetes.Cluster
+      properties:
+        version: "1.28"

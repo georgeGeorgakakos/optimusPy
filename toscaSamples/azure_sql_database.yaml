@@ -1,0 +1,14 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: Azure SQL Database
+
+topology_template:
+  node_templates:
+    sql_database:
+      type: tosca.nodes.Database.Azure.SQL
+      properties:
+        server_name: myserver
+        database_name: mydb
+        edition: Standard
+        service_tier: S2
+        max_size_gb: 250
+        geo_replication: true

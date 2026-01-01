@@ -1,0 +1,31 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: Smart home automation system
+
+topology_template:
+  node_templates:
+    smart_thermostat:
+      type: tosca.nodes.IoT.SmartDevice
+      properties:
+        device_type: thermostat
+        connectivity: wifi
+        power_source: battery
+      requirements:
+        - connects_to: home_hub
+    
+    home_hub:
+      type: tosca.nodes.IoT.Hub
+      properties:
+        protocols:
+          - zigbee
+          - wifi
+          - bluetooth
+      requirements:
+        - host: edge_device
+    
+    edge_device:
+      type: tosca.nodes.Compute.EdgeDevice
+      capabilities:
+        host:
+          properties:
+            num_cpus: 4
+            mem_size: 4 GB

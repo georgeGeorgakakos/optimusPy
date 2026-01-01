@@ -1,0 +1,19 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: Azure Virtual Machine
+
+topology_template:
+  node_templates:
+    app_vm:
+      type: tosca.nodes.Compute.Azure.VM
+      properties:
+        vm_size: Standard_D2s_v3
+        image_publisher: Canonical
+        image_offer: UbuntuServer
+        image_sku: 22.04-LTS
+        os_disk_size: 128
+        admin_username: azureuser
+      capabilities:
+        host:
+          properties:
+            num_cpus: 2
+            mem_size: 8 GB

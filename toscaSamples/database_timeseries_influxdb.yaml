@@ -1,0 +1,22 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: InfluxDB time series database
+
+topology_template:
+  node_templates:
+    influxdb:
+      type: tosca.nodes.Database.TimeSeries
+      properties:
+        version: "2.7"
+        retention_period: 30d
+        shard_duration: 1d
+      requirements:
+        - host: tsdb_host
+    
+    tsdb_host:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties:
+            num_cpus: 8
+            mem_size: 32 GB
+            storage: 5TB

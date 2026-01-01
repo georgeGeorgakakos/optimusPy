@@ -1,0 +1,30 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: Kubernetes web application deployment
+
+topology_template:
+  node_templates:
+    webapp_deployment:
+      type: tosca.nodes.Kubernetes.Deployment
+      properties:
+        name: webapp
+        replicas: 3
+        container_image: myapp:v1.0
+        container_port: 8080
+      requirements:
+        - host: k8s_cluster
+    
+    webapp_service:
+      type: tosca.nodes.Kubernetes.Service
+      properties:
+        name: webapp-service
+        type: LoadBalancer
+        port: 80
+        target_port: 8080
+      requirements:
+        - deployment: webapp_deployment
+    
+    k8s_cluster:
+      type: tosca.nodes.Kubernetes.Cluster
+      properties:
+        version: "1.28"
+        node_count: 3

@@ -1,0 +1,22 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: Augmented reality edge application
+
+topology_template:
+  node_templates:
+    ar_service:
+      type: tosca.nodes.EdgeComputing.ARService
+      properties:
+        tracking_type: slam
+        render_resolution: 4K
+        target_fps: 60
+      requirements:
+        - host: ar_edge_server
+    
+    ar_edge_server:
+      type: tosca.nodes.Compute.EdgeDevice
+      capabilities:
+        host:
+          properties:
+            num_cpus: 12
+            mem_size: 32 GB
+            gpu: nvidia-rtx-4090

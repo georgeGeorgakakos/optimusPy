@@ -1,0 +1,26 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: Machine learning training cluster
+
+topology_template:
+  node_templates:
+    ml_training_job:
+      type: tosca.nodes.ML.TrainingJob
+      properties:
+        framework: pytorch
+        model_type: transformer
+        dataset_size: 500GB
+      requirements:
+        - host: gpu_cluster
+    
+    gpu_cluster:
+      type: tosca.nodes.Compute.GPUCluster
+      properties:
+        node_count: 4
+        gpu_type: nvidia-a100
+        gpus_per_node: 8
+      capabilities:
+        host:
+          properties:
+            num_cpus: 64
+            mem_size: 512 GB
+            gpu_mem: 640 GB

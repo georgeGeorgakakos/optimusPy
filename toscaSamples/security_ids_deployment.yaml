@@ -1,0 +1,42 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: Intrusion Detection System
+
+topology_template:
+  node_templates:
+    ids_sensor:
+      type: tosca.nodes.Security.IDS
+      properties:
+        ids_type: suricata
+        mode: inline
+        rules: emerging-threats
+      requirements:
+        - monitors: network_segment
+        - host: ids_host
+    
+    siem:
+      type: tosca.nodes.Security.SIEM
+      properties:
+        siem_type: splunk
+        log_retention: 90
+      requirements:
+        - receives_from: ids_sensor
+        - host: siem_host
+    
+    network_segment:
+      type: tosca.nodes.Network
+    
+    ids_host:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties:
+            num_cpus: 8
+            mem_size: 32 GB
+    
+    siem_host:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties:
+            num_cpus: 16
+            mem_size: 64 GB

@@ -1,0 +1,19 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: Kubernetes CronJob for database backup
+
+topology_template:
+  node_templates:
+    db_backup_job:
+      type: tosca.nodes.Kubernetes.CronJob
+      properties:
+        name: db-backup
+        schedule: "0 2 * * *"
+        container_image: backup-tool:v1.0
+        backoff_limit: 3
+      requirements:
+        - host: k8s_cluster
+    
+    k8s_cluster:
+      type: tosca.nodes.Kubernetes.Cluster
+      properties:
+        version: "1.28"

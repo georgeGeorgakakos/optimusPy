@@ -1,0 +1,31 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: Nginx container deployment
+
+topology_template:
+  node_templates:
+    nginx_container:
+      type: tosca.nodes.Container.Application.Docker
+      properties:
+        image: nginx:1.25-alpine
+        ports:
+          - 80:80
+          - 443:443
+        environment:
+          NGINX_HOST: example.com
+      requirements:
+        - host: docker_runtime
+    
+    docker_runtime:
+      type: tosca.nodes.Container.Runtime.Docker
+      properties:
+        version: "24.0"
+      requirements:
+        - host: container_host
+    
+    container_host:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties:
+            num_cpus: 2
+            mem_size: 4 GB

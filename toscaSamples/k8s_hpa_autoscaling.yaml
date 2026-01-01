@@ -1,0 +1,26 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: Kubernetes HorizontalPodAutoscaler
+
+topology_template:
+  node_templates:
+    webapp_hpa:
+      type: tosca.nodes.Kubernetes.HorizontalPodAutoscaler
+      properties:
+        name: webapp-hpa
+        min_replicas: 2
+        max_replicas: 10
+        target_cpu_utilization: 70
+      requirements:
+        - target: webapp_deployment
+        - host: k8s_cluster
+    
+    webapp_deployment:
+      type: tosca.nodes.Kubernetes.Deployment
+      properties:
+        name: webapp
+        replicas: 3
+    
+    k8s_cluster:
+      type: tosca.nodes.Kubernetes.Cluster
+      properties:
+        version: "1.28"

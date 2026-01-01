@@ -1,0 +1,29 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: Prometheus monitoring stack
+
+topology_template:
+  node_templates:
+    prometheus_server:
+      type: tosca.nodes.Monitoring.Prometheus
+      properties:
+        version: "2.48"
+        retention_days: 15
+        scrape_interval: 15s
+      requirements:
+        - host: monitoring_host
+    
+    grafana_dashboard:
+      type: tosca.nodes.Monitoring.Grafana
+      properties:
+        version: "10.2"
+      requirements:
+        - datasource: prometheus_server
+        - host: monitoring_host
+    
+    monitoring_host:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties:
+            num_cpus: 4
+            mem_size: 16 GB

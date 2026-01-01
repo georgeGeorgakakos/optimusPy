@@ -1,0 +1,29 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: IoT sensor network deployment
+
+topology_template:
+  node_templates:
+    temperature_sensor:
+      type: tosca.nodes.IoT.Sensor
+      properties:
+        sensor_type: temperature
+        sampling_rate: 60
+        protocol: mqtt
+      requirements:
+        - connects_to: iot_gateway
+    
+    iot_gateway:
+      type: tosca.nodes.IoT.Gateway
+      properties:
+        protocols:
+          - mqtt
+          - coap
+        max_devices: 1000
+      requirements:
+        - connects_to: iot_platform
+    
+    iot_platform:
+      type: tosca.nodes.IoT.Platform
+      properties:
+        platform_name: aws-iot-core
+        region: us-east-1

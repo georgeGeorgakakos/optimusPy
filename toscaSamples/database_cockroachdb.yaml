@@ -1,0 +1,21 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: CockroachDB distributed SQL database
+
+topology_template:
+  node_templates:
+    cockroachdb:
+      type: tosca.nodes.Database.CockroachDB
+      properties:
+        version: "23.2"
+        num_nodes: 5
+        replication_factor: 3
+      requirements:
+        - host: crdb_host
+    
+    crdb_host:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties:
+            num_cpus: 8
+            mem_size: 32 GB

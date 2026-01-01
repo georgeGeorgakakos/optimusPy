@@ -1,0 +1,23 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: ML model inference service
+
+topology_template:
+  node_templates:
+    inference_service:
+      type: tosca.nodes.ML.InferenceService
+      properties:
+        model_name: bert-large
+        model_version: "1.0"
+        max_batch_size: 32
+        timeout: 100ms
+      requirements:
+        - host: inference_server
+    
+    inference_server:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties:
+            num_cpus: 16
+            mem_size: 64 GB
+            gpu: nvidia-t4

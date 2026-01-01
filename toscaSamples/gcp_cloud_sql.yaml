@@ -1,0 +1,14 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: GCP Cloud SQL PostgreSQL
+
+topology_template:
+  node_templates:
+    postgres_instance:
+      type: tosca.nodes.Database.GCP.CloudSQL
+      properties:
+        database_version: POSTGRES_16
+        tier: db-n1-standard-2
+        region: us-central1
+        availability_type: REGIONAL
+        backup_enabled: true
+        disk_size: 100

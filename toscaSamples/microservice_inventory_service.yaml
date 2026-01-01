@@ -1,0 +1,38 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: Inventory management microservice
+
+topology_template:
+  node_templates:
+    inventory_service:
+      type: tosca.nodes.Microservice
+      properties:
+        service_name: inventory-mgmt
+        language: rust
+        port: 8080
+      requirements:
+        - host: service_host
+        - database: inventory_db
+    
+    inventory_db:
+      type: tosca.nodes.Database.MongoDB
+      properties:
+        version: "7.0"
+        replica_set: true
+      requirements:
+        - host: db_host
+    
+    service_host:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties:
+            num_cpus: 2
+            mem_size: 4 GB
+    
+    db_host:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties:
+            num_cpus: 2
+            mem_size: 4 GB

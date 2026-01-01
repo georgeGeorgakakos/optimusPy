@@ -1,0 +1,53 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: Django web application with PostgreSQL
+
+topology_template:
+  node_templates:
+    django_app:
+      type: tosca.nodes.WebApplication.Django
+      properties:
+        app_name: myproject
+        python_version: "3.11"
+        debug: false
+      requirements:
+        - host: gunicorn
+        - database: postgres
+    
+    gunicorn:
+      type: tosca.nodes.WebServer.Gunicorn
+      properties:
+        workers: 4
+        port: 8000
+      requirements:
+        - host: app_host
+    
+    postgres:
+      type: tosca.nodes.Database.PostgreSQL
+      properties:
+        version: "16.1"
+        db_name: django_db
+      requirements:
+        - host: db_host
+    
+    nginx:
+      type: tosca.nodes.WebServer.Nginx
+      properties:
+        version: "1.25"
+      requirements:
+        - host: app_host
+    
+    app_host:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties:
+            num_cpus: 4
+            mem_size: 8 GB
+    
+    db_host:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties:
+            num_cpus: 4
+            mem_size: 8 GB

@@ -1,0 +1,29 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: AI chatbot deployment
+
+topology_template:
+  node_templates:
+    chatbot_service:
+      type: tosca.nodes.AI.Chatbot
+      properties:
+        model: gpt-4
+        max_tokens: 4096
+        temperature: 0.7
+      requirements:
+        - host: api_server
+        - database: conversation_db
+    
+    conversation_db:
+      type: tosca.nodes.Database.VectorDB
+      properties:
+        type: pinecone
+        dimensions: 1536
+        metric: cosine
+    
+    api_server:
+      type: tosca.nodes.Compute
+      capabilities:
+        host:
+          properties:
+            num_cpus: 8
+            mem_size: 32 GB
