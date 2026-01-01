@@ -124,7 +124,7 @@ client.print_result(delete_result, "Delete Result")
 # 11. Upload TOSCA File (if exists)
 print("\n11. Upload TOSCA File (Example)")
 print("-" * 40)
-tosca_file = "webapp_adt.yaml"
+tosca_file = "toscaSamples/webapp_adt.yaml"
 try:
     upload_result = client.upload_tosca(tosca_file)
     client.print_result(upload_result, "Upload Result")
