@@ -21,6 +21,12 @@
 
 ---
 
+### 🔗 Postman & API Testing
+**A collection of tests that can be performed using Postman 
+- 🔗 **[Postman Collection – Full API Reference](PostmanCollection/API_SPECIFICATION.md)**
+- 📁 **[Postman Collection – Optimusdb Tests](PostmanCollection/OptimusDB_Hackathon.postman_collection.json)**
+---
+
 ## Overview
 
 The **Swarmchestrate OptimusDB Python Client** is a comprehensive testing and interaction tool for the OptimusDB distributed data catalog system. It enables full CRUD operations, TOSCA template management, and advanced querying capabilities for testing Swarmchestrate's knowledge base infrastructure.
