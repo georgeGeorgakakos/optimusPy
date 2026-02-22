@@ -1134,6 +1134,261 @@ python3 optimusdb_client.py delete --criteria '_filename:test_.*:regex'
 ```
 
 ---
+---
+
+## 2. CLI Reference
+
+```bash
+python optimusdb_client.py [--url URL] [--context CTX] [--log-level LEVEL] COMMAND
+```
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `--url` | `http://193.225.250.240/optimusdb1` | Base URL |
+| `--context` | `swarmkb` | API context |
+| `--log-level` | `INFO` | `DEBUG`, `INFO`, `WARNING`, `ERROR` |
+
+### Commands
+
+```bash
+# Health & status
+python optimusdb_client.py health
+python optimusdb_client.py status
+python optimusdb_client.py peers
+python optimusdb_client.py mesh
+
+# Get documents
+python optimusdb_client.py get
+python optimusdb_client.py get --dstype kbmetadata
+python optimusdb_client.py get --criteria '_filename:webapp_adt.yaml'
+python optimusdb_client.py get --criteria 'capacity:100:gt'
+python optimusdb_client.py get --criteria 'name:Solar.*:regex'
+
+# Create documents
+python optimusdb_client.py create --json '[{"name":"test","type":"demo"}]'
+python optimusdb_client.py create --json data.json
+
+# Update documents
+python optimusdb_client.py update --criteria '_id:12345' --data '{"status":"active"}'
+
+# Delete documents
+python optimusdb_client.py delete --criteria 'type:test'
+python optimusdb_client.py delete-all --confirm
+
+# Upload TOSCA
+python optimusdb_client.py upload toscaSamples/webapp_adt.yaml
+python optimusdb_client.py upload toscaSamples/webapp_adt.yaml --target-store dsswresaloc
+python optimusdb_client.py upload toscaSamples/webapp_adt.yaml --legacy-mode
+
+# Metadata
+python optimusdb_client.py metadata
+python optimusdb_client.py metadata --associated-id <template_id>
+python optimusdb_client.py metadata --id <metadata_id>
+
+# SQL queries
+python optimusdb_client.py sql "SELECT * FROM metadata_catalog LIMIT 5"
+python optimusdb_client.py sql "SELECT * FROM tosca_metadata ORDER BY rowid DESC LIMIT 5"
+python optimusdb_client.py sql "PRAGMA table_info(metadata_catalog)"
+
+# Verify schema
+python optimusdb_client.py verify-schema
+```
+
+### Criteria Syntax
+
+| Format | Example | Translates to |
+|--------|---------|---------------|
+| `field:value` | `_filename:test.yaml` | exact match |
+| `field:value:regex` | `name:^Solar.*:regex` | regex match |
+| `field:value:gt` | `capacity:100:gt` | `> 100` |
+| `field:value:gte` | `capacity:100:gte` | `>= 100` |
+| `field:value:lt` | `capacity:200:lt` | `< 200` |
+| `field:value:ne` | `status:inactive:ne` | `!= inactive` |
+
+---
+
+## 3. Pipeline Test Script
+
+`test_metadata_pipeline.py` runs the complete end-to-end scenario:
+
+```bash
+python test_metadata_pipeline.py
+python test_metadata_pipeline.py --url http://193.225.250.240/optimusdb1
+python test_metadata_pipeline.py --log-level DEBUG
+```
+
+### What It Does (9 Steps)
+
+| Step | Action | Checks |
+|------|--------|--------|
+| 0 | Health check | Agent role, peer ID, cluster peers |
+| 1 | Upload TOSCA file | template_id, storage_type, queryable flag |
+| 2 | Check records in dsswres | Document exists, TOSCA structure preserved |
+| 3 | Query with field criteria | _storage_type, _filename, contains operator |
+| 4 | Wait for auto-generated metadata | All 48 fields populated, OrbitDB + SQLite |
+| 5 | Add 6 new fields | geo_location, compliance_tags, contact_info, api_endpoint, language, license_type |
+| 6 | Update 7 existing fields | status, priority, data_classification, update_frequency, processing_status, retention_policy, access_control |
+| 7 | Verify OrbitDB ↔ SQLite sync | Compare field values across both stores |
+| 8 | Verify 48-column schema | All columns present in metadata_catalog |
+| 9 | Check TOSCA index | tosca_metadata table entry with filename, node_count, SHA256, IPFS path |
+
+### Sample Output
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  OptimusDB — Extended Metadata Pipeline Test
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ┌─ Step 1: Upload TOSCA Template (store_full_structure=true)
+  │  ℹ️  File: toscaSamples/webapp_adt.yaml
+  │  ✅ Template ID  : tosca_abc123
+  │  ✅ Storage type : full_structure
+  │  ✅ Queryable    : True
+  └─ done
+
+  ┌─ Step 5: Add New Fields to Metadata
+  │  ✅ Added 6 new fields to metadata
+  │  ✅   geo_location   = Athens, Greece (37.98°N, 23.73°E)
+  │  ✅   compliance_tags= EU-GDPR,Horizon-Europe,ISO-27001
+  │  ✅   contact_info   = george@aueb.gr
+  └─ done
+
+  ┌─ Step 7: Verify Changes — OrbitDB vs SQLite
+  │  ✅ OrbitDB status           = ACTIVE
+  │  ✅ SQLite  status           = ACTIVE
+  │  ✅ ✓ OrbitDB and SQLite are in sync
+  └─ done
+```
+
+---
+
+## 4. Batch Operations
+
+```bash
+# Upload all 60 TOSCA samples
+python batch_operations.py bulk-upload toscaSamples/
+
+# Export all documents to JSON
+python batch_operations.py export backup.json
+
+# Import from JSON
+python batch_operations.py import backup.json
+
+# Cleanup by pattern
+python batch_operations.py cleanup "test_.*"
+```
+
+---
+
+## 5. The 48 Metadata Fields
+
+When a TOSCA file is uploaded with `store_full_structure=true`, OptimusDB auto-generates a metadata entry with these fields:
+
+| Group | Fields |
+|-------|--------|
+| **Core Identity** | `id`, `name`, `author`, `metadata_type`, `description`, `tags`, `status`, `version` |
+| **Relationships** | `associated_id`, `parent_id`, `related_ids`, `component`, `behaviour`, `relationships` |
+| **Data Classification** | `data_domain`, `data_classification`, `language`, `license_type`, `file_format`, `schema_version` |
+| **Quality & Metrics** | `data_quality_score`, `file_size_bytes`, `record_count`, `node_count`, `content_hash`, `priority` |
+| **Temporal** | `created_at`, `updated_at`, `created_by`, `temporal_coverage`, `update_frequency`, `expiry_date`, `retention_policy` |
+| **Governance** | `access_control`, `compliance_tags`, `ownership_details`, `audit_trail`, `sla_constraints`, `scheduling_info`, `contact_info` |
+| **Provenance** | `geo_location`, `provenance_chain`, `processing_status`, `api_endpoint`, `ipfs_cid`, `source_agent`, `source_pod`, `source_ip` |
+
+These are stored in two locations:
+- **OrbitDB KBMetadata** — CRDT-replicated across all peers
+- **SQLite metadata_catalog** — fast local queries via `/ems/sql`
+
+---
+
+## 6. Available Datastores
+
+| Store | Purpose |
+|-------|---------|
+| `dsswres` | Default document store (TOSCA templates, general data) |
+| `dsswresaloc` | Allocation-specific resources |
+| `kbmetadata` | Auto-generated metadata entries (48 fields) |
+| `kbdata` | General knowledge base data |
+| `tosca_imported` | Raw imported TOSCA documents |
+| `tosca_adt` | Application Deployment Templates |
+| `tosca_capacities` | Capacity profiles |
+| `tosca_deploymentplan` | Deployment plans |
+| `tosca_eventhistory` | Event history records |
+| `whoiswho` | Peer identity registry |
+
+---
+
+## 7. API Endpoints
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/{context}/command` | POST | All CRUD + query operations |
+| `/{context}/upload` | POST | TOSCA file upload (base64 JSON) |
+| `/{context}/ems/sql` | POST | SQL queries against SQLite |
+| `/{context}/agent/status` | GET | Agent role, peer ID, cluster info |
+| `/{context}/peers` | GET | Discovered peer list |
+| `/{context}/debug/optimusdb/mesh` | GET | Mesh health & replication |
+
+Default base: `http://193.225.250.240/optimusdb1`
+Default context: `swarmkb`
+
+Full URL example: `http://193.225.250.240/optimusdb1/swarmkb/command`
+
+---
+
+## 8. Troubleshooting
+
+### Connection refused
+
+```bash
+# Check health
+python optimusdb_client.py health
+
+# Test with curl
+curl http://193.225.250.240/optimusdb1/swarmkb/agent/status
+
+# Try with debug logging
+python optimusdb_client.py --log-level DEBUG health
+```
+
+### Upload returns no template_id
+
+```bash
+# Verify YAML is valid
+python -c "import yaml; yaml.safe_load(open('file.yaml')); print('OK')"
+
+# Upload with debug
+python optimusdb_client.py --log-level DEBUG upload file.yaml
+```
+
+### Metadata not generated
+
+The metadata goroutine runs async after upload. Wait a few seconds, then:
+
+```bash
+python optimusdb_client.py metadata --associated-id <template_id>
+```
+
+Or in Python:
+
+```python
+meta = client.wait_for_metadata(template_id, timeout_seconds=20)
+```
+
+### SQLite table not found
+
+The `metadata_catalog` table is created on first use. If you get an error, verify with:
+
+```bash
+python optimusdb_client.py sql "SELECT name FROM sqlite_master WHERE type='table'"
+```
+
+---
+
+## TOSCA Samples
+
+The `toscaSamples/` directory contains 60 ready-to-use templates covering cloud providers (AWS, Azure, GCP), Kubernetes resources, databases, microservices, IoT, edge computing, monitoring, security, CI/CD, and ML workloads.
+
+---
 
 ## License
 
