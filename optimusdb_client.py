@@ -177,6 +177,7 @@ class OptimusDBClient:
         self.logger.info(f"Updating documents in {dstype}")
         result = self._execute_command(
             method={"cmd": "crudupdate", "argcnt": 1},
+            dstype=dstype,
             criteria=criteria,
             UpdateData=update_data
         )
@@ -190,6 +191,7 @@ class OptimusDBClient:
         self.logger.info(f"Deleting documents from {dstype}")
         result = self._execute_command(
             method={"cmd": "cruddelete", "argcnt": 1},
+            dstype=dstype,
             criteria=criteria
         )
         self.logger.info("Delete completed")
@@ -293,8 +295,8 @@ class OptimusDBClient:
         result = response.json()
 
         template_id = (
-            result.get('data', {}).get('template_id') or
-            result.get('template_id')
+                result.get('data', {}).get('template_id') or
+                result.get('template_id')
         )
         if template_id:
             self.logger.info(f"Template ID: {template_id}")
@@ -330,9 +332,9 @@ class OptimusDBClient:
         if criteria is not None:
             q = criteria
         elif metadata_id:
-            q = [{"field": "_id", "operator": "==", "value": metadata_id}]
+            q = [{"_id": metadata_id}]
         elif associated_id:
-            q = [{"field": "associated_id", "operator": "==", "value": associated_id}]
+            q = [{"associated_id": associated_id}]
         else:
             q = []
 
@@ -407,9 +409,9 @@ class OptimusDBClient:
 
         # 3) PUT back to OrbitDB
         self._execute_command(
-            method={"cmd": "put"},
+            method={"cmd": "crudput", "argcnt": 1},
             dstype="kbmetadata",
-            args=[json.dumps(doc)]
+            criteria=[doc]
         )
         self.logger.info(f"✓ OrbitDB KBMetadata updated")
 
@@ -756,8 +758,8 @@ Examples:
 
         elif args.command == 'upload':
             result = client.upload_tosca(args.file,
-                                          store_full_structure=not args.legacy_mode,
-                                          target_store=args.target_store)
+                                         store_full_structure=not args.legacy_mode,
+                                         target_store=args.target_store)
             client.print_result(result, "UPLOAD Result")
 
         elif args.command == 'metadata':
